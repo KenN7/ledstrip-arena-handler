@@ -1,0 +1,22 @@
+{
+    "colorConf": {
+        "numLeds": 12,
+        "unitSize": 1,
+        "brightness": 25,
+        "patternSize": 4,
+        "colorPattern": [
+            {
+                "rgb": [0, 0, 255]
+            },
+            {
+                "rgb": [0, 255, 0]
+            },
+            {
+                "rgb": [0, 255, 0]
+            },
+            {
+                "rgb": [255, 0, 0]
+            }
+        ]
+    }
+}
