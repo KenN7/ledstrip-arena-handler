@@ -4,7 +4,7 @@
 #define DATA_PIN 13
 #define CLOCK_PIN 12
 #define DEFAULT_BRIGHTNESS 25
-#define SRATE 9600
+#define SRATE 57600
 
 CRGB leds[NUM_LEDS];
 
@@ -38,6 +38,7 @@ void serialEvent()
 
         int index = 0;
         int comma = 0;
+        boolean omit = false;
         String tmp = "";
         do
         {
@@ -55,6 +56,7 @@ void serialEvent()
                 }
                 else if (comma == 3)
                 {
+                    (tmp.toInt() < 0) ? omit = true : omit = false;
                     blockColor[0] = tmp.toInt();
                 }
                 else if (comma == 4)
@@ -75,7 +77,7 @@ void serialEvent()
             }
         } while (block[index] != '\0');
 
-        for (int i = blockIndex * blockSize; i < (blockIndex * blockSize) + blockSize; i++)
+        for (int i = blockIndex * blockSize; i < (blockIndex * blockSize) + blockSize && !omit; i++)
         {
             leds[i].setRGB(blockColor[0], blockColor[1], blockColor[2]);
         }

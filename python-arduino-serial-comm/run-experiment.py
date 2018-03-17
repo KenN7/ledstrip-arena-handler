@@ -169,6 +169,6 @@ if __name__ == "__main__":
     jsonLeds = data['led']
     arena = Arena(jsonArena)
     # generateArdInsForArena(arena)
-    #generateArdInsForBlock(jsonBlocks, arena)
-    #generateArdInsForEdge(jsonEdges, arena)
+    # generateArdInsForBlock(jsonBlocks, arena)
+    # generateArdInsForEdge(jsonEdges, arena)
     generateArdInsForLed(jsonLeds, arena)
