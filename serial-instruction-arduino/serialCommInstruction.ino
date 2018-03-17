@@ -1,6 +1,6 @@
 #include <FastLED.h>
 #include <ArduinoJson.h>
-#define NUM_LEDS 324
+#define NUM_LEDS 348
 #define DATA_PIN 13
 #define CLOCK_PIN 12
 #define DEFAULT_BRIGHTNESS 25
@@ -19,7 +19,7 @@ void loop() {}
 
 void serialEvent()
 {
-    while (Serial.available())
+    while (Serial.available() > 0)
     {
         StaticJsonBuffer<300> jsonBuffer;
         JsonObject &root = jsonBuffer.parseObject(Serial);
@@ -29,7 +29,7 @@ void serialEvent()
             Serial.println("parseObject() failed");
             return;
         }
-        root.prettyPrintTo(Serial);
+
         int brightness = root["brightness"];
         const char *block = root["block"];
         int blockIndex;
@@ -74,12 +74,6 @@ void serialEvent()
                 ;
             }
         } while (block[index] != '\0');
-
-        if (brightness)
-        {
-            Serial.println("brightnes has changed.");
-            LEDS.setBrightness(brightness);
-        }
 
         for (int i = blockIndex * blockSize; i < (blockIndex * blockSize) + blockSize; i++)
         {
@@ -130,6 +124,8 @@ void serialEvent()
 
             leds[(blockIndex * blockSize) + lIndex].setRGB(ledColor[0], ledColor[1], ledColor[2]);
         }
+        LEDS.setBrightness(brightness);
         FastLED.show();
+        Serial.println("Instruction executed successfully!");
     }
 }
