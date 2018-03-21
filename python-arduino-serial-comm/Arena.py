@@ -13,4 +13,7 @@ class Arena(object):
         self.leds = 0
         self.color = ''
         self.brightness = 0
+        self.edge = []
+        self.block = []
+        self.led = []
         self.__dict__ = json.loads(data)

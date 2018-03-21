@@ -11,4 +11,5 @@ class Edge(object):
         self.index = 0
         self.color = ""
         self.block = []
+        self.led = []
         self.__dict__ = json.loads(data)

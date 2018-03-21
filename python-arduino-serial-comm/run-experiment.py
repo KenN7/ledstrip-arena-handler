@@ -10,53 +10,71 @@ from Color import Color
 
 JSON_TEST = """
 {
-    "arena":{
+    "arena": {
         "edges": 3,
         "blocks": 2,
         "leds": 2,
-        "color": "blue",
-        "brightness": 10
-    },
-    "block":[
-        {
-            "index":1,
-            "color":"red",
-            "led":[]
-        }
-    ],
-    "edge":[
-        {
-            "index":-1,
-            "color":"blue",
-            "block":[]
-        }
-    ],
-    "led":[
-        {
-            "index":1,
-            "color":"blue"
-        },
-        {
-            "index":2,
-            "color":"blue"
-        },
-        {
-            "index":3,
-            "color":"blue"
-        },
-        {
-            "index":4,
-            "color":"blue"
-        },
-        {
-            "index":5,
-            "color":"blue"
-        },
-        {
-            "index":6,
-            "color":"blue"
-        }
-    ]
+        "color": "omit",
+        "brightness": 10,
+        "edge": [
+            {
+                "index": 1,
+                "color": "green",
+                "block": [],
+                "led":[]
+            },
+            {
+                "index": 2,
+                "color": "red",
+                "block": [
+                    {
+                        "index": 1,
+                        "color": "green",
+                        "led": []
+                    },
+                    {
+                        "index": 2,
+                        "color": "omit",
+                        "led": [
+                            {
+                                "index":1,
+                                "color":"blue"
+                            }
+                        ]
+                    }
+                ],
+                "led": []
+            },
+            {
+                "index": 3,
+                "color": "omit",
+                "block": [],
+                "led":[
+                    {
+                        "index":4,
+                        "color":"blue"
+                    }
+                ]
+            }
+        ],
+        "block": [
+            {
+                "index": 1,
+                "color": "red",
+                "led": []
+            }
+        ],
+        "led": [
+            {
+                "index": 1,
+                "color": "blue"
+            },
+            {
+                "index": 2,
+                "color": "red"
+            }
+        ]
+    }
 }
 """
 
@@ -76,12 +94,14 @@ def generateArdInsForArena(arena):
             + str(arena.leds) + "," \
             + Color[arena.color.upper()].value
         aIns.send_instrunction(str(bIns.toJSON()))
+    generateArdInsForEdge(arena.edge, arena, aIns)
+    #generateArdInsForBlock(arena.block, arena, aIns)
+    #generateArdInsForLed(arena.led, arena, aIns)
     aIns.close_connection()
 
 
-def generateArdInsForEdge(edges, arena):
-    aIns = ArduinoInstruction('COM4', 57600)
-    aIns.start_connection()
+def generateArdInsForEdge(edges, arena, aIns):
+
     for jsonEdge in edges:
         edge = Edge(json.dumps(jsonEdge))
         # Converting from negative to equivalent positive
@@ -97,12 +117,21 @@ def generateArdInsForEdge(edges, arena):
                 + str(arena.leds) + "," \
                 + Color[edge.color.upper()].value
             aIns.send_instrunction(str(bIns.toJSON()))
-    aIns.close_connection()
+        # If there are some blocks, execute them.
+        for jsonBlock in edge.block:
+            jsonBlock['index'] = \
+                edgeBlockToBlock(edge.index, arena.blocks, jsonBlock['index'])
+        generateArdInsForBlock(edge.block, arena, aIns)
+        # If there are some leds, execute them.
+        for jsonLed in edge.led:
+            jsonLed['index'] = \
+                edgeBlockToBlock(
+                    edge.index, (arena.blocks * arena.leds), jsonLed['index']
+            )
+        generateArdInsForLed(edge.led, arena, aIns)
 
 
-def generateArdInsForBlock(blocks, arena):
-    aIns = ArduinoInstruction('COM4', 57600)
-    aIns.start_connection()
+def generateArdInsForBlock(blocks, arena, aIns):
     for jsonBlock in blocks:
         block = Block(json.dumps(jsonBlock))
         # Converting from negative to equivalent positive
@@ -118,12 +147,16 @@ def generateArdInsForBlock(blocks, arena):
             + str(arena.leds) + "," \
             + Color[block.color.upper()].value
         aIns.send_instrunction(str(bIns.toJSON()))
-    aIns.close_connection()
+        # If there are some leds, execute them.
+        for jsonLed in block.led:
+            jsonLed['index'] = \
+                edgeBlockToBlock(
+                    block.index, arena.leds, jsonLed['index']
+            )
+        generateArdInsForLed(block.led, arena, aIns)
 
 
-def generateArdInsForLed(leds, arena):
-    aIns = ArduinoInstruction('COM4', 57600)
-    aIns.start_connection()
+def generateArdInsForLed(leds, arena, aIns):
     for jsonLed in leds:
         led = Led(json.dumps(jsonLed))
         # convert the absolut led position to block relative
@@ -156,19 +189,19 @@ def generateArdInsForLed(leds, arena):
         bIns.led.append(
             str(ledBlockRelPos - 1) + "," + Color[led.color.upper()].value
         )
-        print(bIns.toJSON())
+        # print(bIns.toJSON())
         aIns.send_instrunction(str(bIns.toJSON()))
-    aIns.close_connection()
+
+
+def edgeBlockToBlock(edIdx, bckPerEd, bckIdx):
+    return (edIdx * bckPerEd) - ((bckPerEd - bckIdx) % bckPerEd)
 
 
 if __name__ == "__main__":
     data = json.loads(JSON_TEST)
     jsonArena = json.dumps(data['arena'])
-    jsonBlocks = data['block']
-    jsonEdges = data['edge']
-    jsonLeds = data['led']
+    jsonBlocks = data['arena']['block']
+    jsonEdges = data['arena']['edge']
+    jsonLeds = data['arena']['led']
     arena = Arena(jsonArena)
-    # generateArdInsForArena(arena)
-    # generateArdInsForBlock(jsonBlocks, arena)
-    # generateArdInsForEdge(jsonEdges, arena)
-    generateArdInsForLed(jsonLeds, arena)
+    generateArdInsForArena(arena)
