@@ -8,75 +8,15 @@ from Led import Led
 from BlockInstruction import BlockInstruction
 from Color import Color
 
-JSON_TEST = """
-{
-    "arena": {
-        "edges": 3,
-        "blocks": 2,
-        "leds": 2,
-        "color": "omit",
-        "brightness": 10,
-        "edge": [
-            {
-                "index": 1,
-                "color": "green",
-                "block": [],
-                "led":[]
-            },
-            {
-                "index": 2,
-                "color": "red",
-                "block": [
-                    {
-                        "index": 1,
-                        "color": "green",
-                        "led": []
-                    },
-                    {
-                        "index": 2,
-                        "color": "omit",
-                        "led": [
-                            {
-                                "index":1,
-                                "color":"blue"
-                            }
-                        ]
-                    }
-                ],
-                "led": []
-            },
-            {
-                "index": 3,
-                "color": "omit",
-                "block": [],
-                "led":[
-                    {
-                        "index":4,
-                        "color":"blue"
-                    }
-                ]
-            }
-        ],
-        "block": [
-            {
-                "index": 1,
-                "color": "red",
-                "led": []
-            }
-        ],
-        "led": [
-            {
-                "index": 1,
-                "color": "blue"
-            },
-            {
-                "index": 2,
-                "color": "red"
-            }
-        ]
-    }
-}
-"""
+
+def runState(state):
+    jsonArena = json.dumps(state['arena'])
+    arena = Arena(jsonArena)
+    generateArdInsForArena(arena)
+
+
+def runExperiment(experiment):
+    pass
 
 
 def generateArdInsForArena(arena):
@@ -94,9 +34,12 @@ def generateArdInsForArena(arena):
             + str(arena.leds) + "," \
             + Color[arena.color.upper()].value
         aIns.send_instrunction(str(bIns.toJSON()))
+    # Edges in arena Individually
     generateArdInsForEdge(arena.edge, arena, aIns)
-    #generateArdInsForBlock(arena.block, arena, aIns)
-    #generateArdInsForLed(arena.led, arena, aIns)
+    # Blocks in arena Indvidually
+    generateArdInsForBlock(arena.block, arena, aIns)
+    # Leds in arena Indvidually
+    generateArdInsForLed(arena.led, arena, aIns)
     aIns.close_connection()
 
 
@@ -106,7 +49,8 @@ def generateArdInsForEdge(edges, arena, aIns):
         edge = Edge(json.dumps(jsonEdge))
         # Converting from negative to equivalent positive
         edge.index = \
-            arena.edges + edge.index + 1 if (edge.index < 0) else edge.index
+            fromNegToPosEq(arena.edges, edge.index) \
+            if (edge.index < 0) else edge.index
         #
         print("Edge: %s, %d, %a" % (edge.color, edge.index, edge.block))
         for i in range(-1, (arena.blocks - 1)):
@@ -120,13 +64,15 @@ def generateArdInsForEdge(edges, arena, aIns):
         # If there are some blocks, execute them.
         for jsonBlock in edge.block:
             jsonBlock['index'] = \
-                edgeBlockToBlock(edge.index, arena.blocks, jsonBlock['index'])
+                fromRelPosToAbsPos(edge.index, arena.blocks,
+                                   jsonBlock['index'])
         generateArdInsForBlock(edge.block, arena, aIns)
         # If there are some leds, execute them.
         for jsonLed in edge.led:
             jsonLed['index'] = \
-                edgeBlockToBlock(
-                    edge.index, (arena.blocks * arena.leds), jsonLed['index']
+                fromRelPosToAbsPos(
+                    edge.index, (arena.blocks *
+                                 arena.leds), jsonLed['index']
             )
         generateArdInsForLed(edge.led, arena, aIns)
 
@@ -136,7 +82,7 @@ def generateArdInsForBlock(blocks, arena, aIns):
         block = Block(json.dumps(jsonBlock))
         # Converting from negative to equivalent positive
         block.index = \
-            (arena.blocks * arena.edges) + block.index + 1\
+            fromNegToPosEq(arena.blocks * arena.edges, block.index)\
             if (block.index < 0) else block.index
         #
         print("Block: %s, %d, %a" % (block.color, block.index, block.led))
@@ -146,19 +92,34 @@ def generateArdInsForBlock(blocks, arena, aIns):
             str(block.index - 1) + "," \
             + str(arena.leds) + "," \
             + Color[block.color.upper()].value
-        aIns.send_instrunction(str(bIns.toJSON()))
-        # If there are some leds, execute them.
+        # If there are some leds, add them to the block instruction.
         for jsonLed in block.led:
-            jsonLed['index'] = \
-                edgeBlockToBlock(
-                    block.index, arena.leds, jsonLed['index']
+            led = Led(json.dumps(jsonLed))
+            # Converting from negative to equivalent positive
+            led.index = \
+                fromNegToPosEq(arena.blocks * arena.edges * arena.leds, led.index)\
+                if (led.index < 0) else led.index
+            #
+            led.index = \
+                fromRelPosToAbsPos(
+                    block.index, arena.leds, led.index
+                )
+            print(led.index)
+            bIns.led.append(
+                str(led.index - 1) + "," + Color[led.color.upper()].value
             )
-        generateArdInsForLed(block.led, arena, aIns)
+        # print(bIns.toJSON())
+        aIns.send_instrunction(str(bIns.toJSON()))
 
 
 def generateArdInsForLed(leds, arena, aIns):
     for jsonLed in leds:
         led = Led(json.dumps(jsonLed))
+        # Converting from negative to equivalent positive
+        led.index = \
+            fromNegToPosEq(arena.blocks * arena.edges * arena.leds, led.index)\
+            if (led.index < 0) else led.index
+        #
         # convert the absolut led position to block relative
         # In which edge is the led
         for edgeIndex in range(1, arena.edges + 1):
@@ -189,19 +150,19 @@ def generateArdInsForLed(leds, arena, aIns):
         bIns.led.append(
             str(ledBlockRelPos - 1) + "," + Color[led.color.upper()].value
         )
-        # print(bIns.toJSON())
+        print(bIns.toJSON())
         aIns.send_instrunction(str(bIns.toJSON()))
 
 
-def edgeBlockToBlock(edIdx, bckPerEd, bckIdx):
-    return (edIdx * bckPerEd) - ((bckPerEd - bckIdx) % bckPerEd)
+def fromRelPosToAbsPos(edIdx, bckPerEd, bckIdx):  # edgeBlock->Block
+    if bckPerEd == 1:
+        return bckIdx
+    else:
+        return (edIdx * bckPerEd) - ((bckPerEd - bckIdx) % bckPerEd)
 
 
-if __name__ == "__main__":
-    data = json.loads(JSON_TEST)
-    jsonArena = json.dumps(data['arena'])
-    jsonBlocks = data['arena']['block']
-    jsonEdges = data['arena']['edge']
-    jsonLeds = data['arena']['led']
-    arena = Arena(jsonArena)
-    generateArdInsForArena(arena)
+def fromNegToPosEq(space, number):
+    if space == 1:
+        return abs(number)
+    else:
+        return (number % space) + 1

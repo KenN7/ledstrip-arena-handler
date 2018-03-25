@@ -64,7 +64,7 @@ class ArduinoInstruction:
 
 if __name__ == "__main__":
     # Test to check if it works.
-    inst = ArduinoInstruction('COM4', 9600)
+    inst = ArduinoInstruction('COM4', 57600)
     inst.start_connection()
     for i in range(0, 3):
         res = inst.send_instrunction("""
