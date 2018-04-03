@@ -156,9 +156,9 @@ JSON_TEST_6 = """
         "color": "omit",
         "brightness": 5,
         "edge":[
-            {"index":[2],"color":"yellow","block":[{"index":[2],"color":"blue","led":[]}],"led":[]}
+            {"index":[-3,1],"color":"yellow","block":[],"led":[]}
         ],
-        "block":[{"index":[-1,3],"color":"red","led":[]}],
+        "block":[{"index":[-1,4],"color":"blue","led":[]}],
         "led":[]
     }
 }
