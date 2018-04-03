@@ -8,7 +8,7 @@ class Edge(object):
     def __init__(self, data):
         """ 
         """
-        self.index = 0
+        self.index = []
         self.color = ""
         self.block = []
         self.led = []

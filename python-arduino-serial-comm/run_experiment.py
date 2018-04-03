@@ -9,7 +9,7 @@ JSON_TEST_1 = """
         "blocks": 2,
         "leds": 2,
         "color": "yellow",
-        "brightness": 10,
+        "brightness": 25,
         "edge": [
             {
                 "index": 1,
@@ -71,7 +71,7 @@ JSON_TEST_1 = """
     }
 }
 """
-# arena and edges working, including negatives
+# arena and edges working, including negatives, verificar brillo
 JSON_TEST_2 = """
 {
     "arena": {
@@ -79,7 +79,7 @@ JSON_TEST_2 = """
         "blocks": 2,
         "leds": 2,
         "color": "red",
-        "brightness": 10,
+        "brightness": 10, 
         "edge":[
             {"index":1,"color":"yellow","block":[],"led":[]},
             {"index":-1,"color":"blue","block":[],"led":[]}
@@ -98,11 +98,8 @@ JSON_TEST_3 = """
         "leds": 2,
         "color": "omit",
         "brightness": 10,
-        "edge":[],
-        "block":[
-            {"index":1,"color":"yellow","led":[]},
-            {"index":-4,"color":"blue","led":[]}
-        ],
+        "edge":[{"index":1,"color":"yellow","block":[],"led":[]}],
+        "block":[],
         "led":[]
     }
 }
@@ -114,43 +111,34 @@ JSON_TEST_4 = """
         "edges": 3,
         "blocks": 2,
         "leds": 2,
-        "color": "omit",
+        "color": "red",
         "brightness": 10,
-        "edge":[],
-        "block":[],
-        "led":[
-            {"index":1,"color":"yellow"},
-            {"index":2,"color":"blue"}
-        ]
+        "edge":[
+            {"index":-1,"color":"yellow","block":[],"led":[]},
+            {"index":2,"color":"omit","block":[],"led":[{"index":1,"color":"white"}]},
+            {"index":3,"color":"omit","block":[{"index":-1,"color":"white","led":[{"index":3,"color":"green"}]}],"led":[]}
+        ],
+        "block":[{"index":2,"color":"blue","led":[{"index":1,"color":"white"}]}],
+        "led":[{"index":1,"color":"yellow"}]
     }
 }
 """
-# arena->block->led working, including negatives
+# arena->block->led working, including negatives # se corrio led
 JSON_TEST_5 = """
 {
     "arena": {
-        "edges": 1,
-        "blocks": 1,
-        "leds": 1,
+        "edges": 3,
+        "blocks": 2,
+        "leds": 2,
         "color": "omit",
         "brightness": 10,
         "edge":[],
         "block":[
             {
-                "index":1,"color":"white",
+                "index":2,"color":"white",
                 "led":[
-                    {"index":-1,"color":"yellow"},
-                    {"index":-2,"color":"blue"},
-                    {"index":-3,"color":"blue"},
-                    {"index":-4,"color":"blue"},
-                    {"index":-5,"color":"blue"},
-                    {"index":-6,"color":"blue"},
-                    {"index":-7,"color":"blue"},
-                    {"index":-8,"color":"blue"},
-                    {"index":-9,"color":"blue"},
-                    {"index":-10,"color":"blue"},
-                    {"index":-11,"color":"blue"},
-                    {"index":-12,"color":"blue"}
+                    {"index":1,"color":"yellow"},
+                    {"index":2,"color":"blue"}
                 ]
             }
             ],
@@ -158,7 +146,24 @@ JSON_TEST_5 = """
     }
 }
 """
+# arena and leds working, range test
+JSON_TEST_6 = """
+{
+    "arena": {
+        "edges": 3,
+        "blocks": 2,
+        "leds": 2,
+        "color": "omit",
+        "brightness": 5,
+        "edge":[
+            {"index":[2],"color":"yellow","block":[{"index":[2],"color":"blue","led":[]}],"led":[]}
+        ],
+        "block":[{"index":[-1,3],"color":"red","led":[]}],
+        "led":[]
+    }
+}
+"""
 
 if __name__ == "__main__":
-    state = json.loads(JSON_TEST_5)
+    state = json.loads(JSON_TEST_6)
     ec.runState(state)
