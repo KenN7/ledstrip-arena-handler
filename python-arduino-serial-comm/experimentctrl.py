@@ -36,11 +36,11 @@ def generateArdInsForArena(arena):
             + Color[arena.color.upper()].value
         print(aIns.send_instrunction(str(bIns.toJSON())))
     # Edges in arena Individually
-    rangeOrSingleEdge(arena.edge, arena, aIns)
+    rangeOrSingleEdge(arena.edge, arena, aIns, True)
     # Blocks in arena Indvidually
-    rangeOrSingleBlock(arena.block, arena, aIns)
+    rangeOrSingleBlock(arena.block, arena, aIns, True)
     # Leds in arena Indvidually
-    rangeOrSingleLed(arena.led, arena, aIns)
+    rangeOrSingleLed(arena.led, arena, aIns, True)
     aIns.close_connection()
 
 
@@ -72,7 +72,7 @@ def generateArdInsForEdge(edge, arena, aIns):
                 )
             )
         jsonBlock['index'] = newBlockRange
-    rangeOrSingleBlock(edge.block, arena, aIns)
+    rangeOrSingleBlock(edge.block, arena, aIns, False)
     # If there are some leds, execute them.
     for jsonLed in edge.led:
         ledsPerEdge = arena.blocks * arena.leds
@@ -84,7 +84,7 @@ def generateArdInsForEdge(edge, arena, aIns):
                 fromRelPosToAbsPos(edgeIndex, ledsPerEdge, rled, space)
             )
         jsonLed['index'] = newLedRange
-    rangeOrSingleLed(edge.led, arena, aIns)
+    rangeOrSingleLed(edge.led, arena, aIns, False)
 
 
 def generateArdInsForBlock(block, arena, aIns):
@@ -141,11 +141,15 @@ def generateArdInsForBlock(block, arena, aIns):
                 )
     # print(bIns.toJSON())
     aIns.send_instrunction(str(bIns.toJSON()))
-    rangeOrSingleLed(ledsOutOfRange, arena, aIns)
+    rangeOrSingleLed(ledsOutOfRange, arena, aIns, False)
 
 
 def generateArdInsForLed(led, arena, aIns):
     ledIndex = led.index[0]
+    if ledIndex < 0:
+        ledIndex = fromNegToPosEq(
+            arena.edges * arena.blocks * arena.leds, ledIndex
+        )
     # convert the absolut led position to block relative
     # In which edge is the led
     for edgeIndex in range(1, arena.edges + 1):
@@ -197,11 +201,12 @@ def fromNegToPosEq(space, number):
         return (number % space) + 1
 
 
-def rangeOrSingleEdge(edges, arena, aIns):
+def rangeOrSingleEdge(edges, arena, aIns, fromArena):
     for jsonEdge in edges:
         edge = Edge(json.dumps(jsonEdge))
         if len(edge.index) > 1:
-            eRange = rangeToList(edge.index)
+            eRange = rangeToList(edge.index) \
+                if(fromArena)else edge.index
             for index in eRange:
                 index = fromRelPosToAbsPos(
                     index, arena.edges, index, arena.edges
@@ -220,11 +225,11 @@ def rangeOrSingleEdge(edges, arena, aIns):
             generateArdInsForEdge(edge, arena, aIns)
 
 
-def rangeOrSingleBlock(blocks, arena, aIns):
+def rangeOrSingleBlock(blocks, arena, aIns, fromArena):
     for jsonBlock in blocks:
         block = Block(json.dumps(jsonBlock))
         if len(block.index) > 1:
-            bRange = rangeToList(block.index)
+            bRange = rangeToList(block.index) if(fromArena)else block.index
             for index in bRange:
                 if index != 0:
                     tmpBlock = copy.copy(block)
@@ -238,11 +243,12 @@ def rangeOrSingleBlock(blocks, arena, aIns):
             generateArdInsForBlock(block, arena, aIns)
 
 
-def rangeOrSingleLed(leds, arena, aIns):
+def rangeOrSingleLed(leds, arena, aIns, fromArena):
     for jsonLed in leds:
         led = Led(json.dumps(jsonLed))
         if len(led.index) > 1:
-            lRange = rangeToList(led.index)
+            lRange = rangeToList(led.index)\
+                if(fromArena)else led.index
             for index in lRange:
                 if index != 0:
                     tmpLed = copy.copy(led)
@@ -255,10 +261,12 @@ def rangeOrSingleLed(leds, arena, aIns):
 def rangeToList(rng):
     list = []
     if len(rng) == 3:
-        list = range(rng[0], rng[1] + 1, rng[2])
+        list = range(rng[0], rng[1] - 1, rng[2]) \
+            if (rng[0] > rng[1]) else range(rng[0], rng[1] + 1, rng[2])
         return list
     elif len(rng) == 2:
-        list = range(rng[0], rng[1] + 1)
+        list = range(rng[0], rng[1] - 1)\
+            if (rng[0] > rng[1]) else range(rng[0], rng[1] + 1)
         return list
     elif len(rng) == 1:
         return rng

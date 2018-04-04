@@ -153,12 +153,26 @@ JSON_TEST_6 = """
         "edges": 3,
         "blocks": 2,
         "leds": 2,
-        "color": "omit",
+        "color": "red",
         "brightness": 5,
         "edge":[
-            {"index":[-3,1],"color":"yellow","block":[],"led":[]}
+            {
+                "index":[1,2],
+                "color":"yellow",
+                "block":[
+                    {
+                        "index":[3,4],
+                        "color":"blue",
+                        "led":[
+                            {"index":[-1,-3,-1],"color":"white"},
+                            {"index":[1,2],"color":"white"}
+                        ]
+                    }
+                ],
+                "led":[]
+            }
         ],
-        "block":[{"index":[-1,4],"color":"blue","led":[]}],
+        "block":[],
         "led":[]
     }
 }
