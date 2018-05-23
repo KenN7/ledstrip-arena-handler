@@ -177,7 +177,38 @@ JSON_TEST_6 = """
     }
 }
 """
+# arena and leds working, range test
+JSON_TEST_7 = """
+{
+    "arena": {
+        "edges": 3,
+        "blocks": 2,
+        "leds": 2,
+        "color": "yellow",
+        "brightness": 1,
+        "edge":[{"index":[1,2],"color":"green","block":[],"led":[]},{"index":[-1],"color":"red","block":[],"led":[]}],
+        "block":[],
+        "led":[]
+    }
+}
+"""
+
+# arena and leds working, range test
+JSON_TEST_8 = """
+{
+    "arena": {
+        "edges": 3,
+        "blocks": 2,
+        "leds": 2,
+        "color": "red",
+        "brightness": 1,
+        "edge":[{"index":[-1],"color":"green","block":[{"index":[2],"color":"yellow","led":[{"index":[2],"color":"white"}]}],"led":[{"index":[1],"color":"white"}]}],
+        "block":[{"index":[1,2],"color":"blue","led":[{"index":[5],"color":"white"}]}],
+        "led":[{"index":[5],"color":"white"}]
+    }
+}
+"""
 
 if __name__ == "__main__":
-    state = json.loads(JSON_TEST_6)
+    state = json.loads(JSON_TEST_8)
     ec.runState(state)
