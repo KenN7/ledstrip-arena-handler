@@ -329,7 +329,8 @@ def rangeOrSingleEdge(edges, arena, aIns, fromArena):
         if len(edge.index) > 1:
             eRange = rangeToList(edge.index) \
                 if(fromArena)else edge.index
-            for index in eRange:  # to-do change to reverse order reversed()
+            for index in reversed(eRange):  # to-do change to reverse order reversed()
+                orIndex = index
                 index = fromRelPosToAbsPos(
                     index, arena.edges, index, arena.edges
                 )
@@ -337,7 +338,7 @@ def rangeOrSingleEdge(edges, arena, aIns, fromArena):
                     tmpEdge = copy.copy(edge)
                     tmpEdge.index = [index]
                     # to-do change from last to first
-                    if not(index == eRange[-1]):
+                    if not(orIndex == eRange[0]):
                         tmpEdge.block = []
                         tmpEdge.led = []
                         generateArdInsForEdge(tmpEdge, arena, aIns)
@@ -372,12 +373,12 @@ def rangeOrSingleBlock(blocks, arena, aIns, fromArena):
         block = Block(json.dumps(jsonBlock))
         if len(block.index) > 1:
             bRange = rangeToList(block.index) if (fromArena) else block.index
-            for index in bRange:  # to-do change to reverse order reversed()
+            for index in reversed(bRange):  # to-do change to reverse order reversed()
                 if index != 0:
                     tmpBlock = copy.copy(block)
                     tmpBlock.index = [index]
                     # to-do change from last to first
-                    if not(index == bRange[-1]):
+                    if not(index == bRange[0]):
                         tmpBlock.led = []
                         generateArdInsForBlock(tmpBlock, arena, aIns)
                     else:
