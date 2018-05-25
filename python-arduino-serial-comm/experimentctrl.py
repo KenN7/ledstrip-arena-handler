@@ -1,6 +1,10 @@
 import json
 import copy
 import logging
+import sched
+import time
+import asyncio
+import threading
 
 from ArduinoInstruction import ArduinoInstruction
 from Arena import Arena
@@ -9,16 +13,42 @@ from Block import Block
 from Led import Led
 from BlockInstruction import BlockInstruction
 from Color import Color
+from Experiment import Experiment
+
+scheduler = sched.scheduler(time.time, time.sleep)
 
 
-def runState(state):
+async def runState(state):
     jsonArena = json.dumps(state['arena'])
     arena = Arena(jsonArena)
+    if not scheduler.empty():
+        list(map(scheduler.cancel, scheduler.queue))
     generateArdInsForArena(arena)
 
 
-def runExperiment(experiment):
-    pass
+async def runExperiment(experiment):
+    delay = 0
+    jsonExperiment = json.dumps(experiment['experiment'])
+    exp = Experiment(jsonExperiment)
+    exp.parseStates()
+    for t in range(exp.repeatTimes):
+        for state in exp.states:
+            scheduler.enter(delay, 1, generateArdInsForArena, (state.arena,))
+            if delay > exp.totalTime and exp.repeat:
+                break
+            delay += state.time
+    if exp.clean:
+        cleanconf = copy.copy(exp.states[-1].arena)
+        cleanconf.color = "none"
+        cleanconf.edge = []
+        cleanconf.block = []
+        cleanconf.led = []
+        scheduler.enter(
+            delay + exp.states[-1].time, 1, generateArdInsForArena, (cleanconf,)
+        )
+    # Start a thread to run the events
+    t = threading.Thread(target=scheduler.run)
+    t.start()
 
 
 def generateArdInsForArena(arena):
@@ -329,7 +359,8 @@ def rangeOrSingleEdge(edges, arena, aIns, fromArena):
         if len(edge.index) > 1:
             eRange = rangeToList(edge.index) \
                 if(fromArena)else edge.index
-            for index in reversed(eRange):  # to-do change to reverse order reversed()
+            # to-do change to reverse order reversed()
+            for index in reversed(eRange):
                 orIndex = index
                 index = fromRelPosToAbsPos(
                     index, arena.edges, index, arena.edges
@@ -373,7 +404,8 @@ def rangeOrSingleBlock(blocks, arena, aIns, fromArena):
         block = Block(json.dumps(jsonBlock))
         if len(block.index) > 1:
             bRange = rangeToList(block.index) if (fromArena) else block.index
-            for index in reversed(bRange):  # to-do change to reverse order reversed()
+            # to-do change to reverse order reversed()
+            for index in reversed(bRange):
                 if index != 0:
                     tmpBlock = copy.copy(block)
                     tmpBlock.index = [index]
