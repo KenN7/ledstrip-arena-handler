@@ -1,5 +1,6 @@
 {
     "sketch": "serialCommInstruction.ino",
-    "board": "arduino:avr:uno",
-    "port": "COM4"
+    "board": "arduino:avr:mega",
+    "port": "COM5",
+    "configuration": "cpu=atmega2560"
 }

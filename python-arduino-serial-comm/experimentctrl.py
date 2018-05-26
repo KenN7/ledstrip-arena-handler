@@ -31,6 +31,8 @@ async def runExperiment(experiment):
     jsonExperiment = json.dumps(experiment['experiment'])
     exp = Experiment(jsonExperiment)
     exp.parseStates()
+    if not scheduler.empty():
+        list(map(scheduler.cancel, scheduler.queue))
     for t in range(exp.repeatTimes):
         for state in exp.states:
             scheduler.enter(delay, 1, generateArdInsForArena, (state.arena,))
@@ -44,7 +46,8 @@ async def runExperiment(experiment):
         cleanconf.block = []
         cleanconf.led = []
         scheduler.enter(
-            delay + exp.states[-1].time, 1, generateArdInsForArena, (cleanconf,)
+            delay +
+            exp.states[-1].time, 1, generateArdInsForArena, (cleanconf,)
         )
     # Start a thread to run the events
     t = threading.Thread(target=scheduler.run)

@@ -11,7 +11,7 @@ CRGB leds[NUM_LEDS];
 void setup()
 {
     Serial.begin(SRATE);
-    FastLED.addLeds<APA102,DATA_PIN,CLOCK_PIN,BGR>(leds, NUM_LEDS);
+    FastLED.addLeds<APA102, DATA_PIN, CLOCK_PIN, BGR>(leds, NUM_LEDS);
     LEDS.setBrightness(DEFAULT_BRIGHTNESS);
 }
 
@@ -29,7 +29,7 @@ void serialEvent()
             Serial.println("parseObject() failed");
             return;
         }
-        
+
         int brightness = root["brightness"];
         const char *block = root["block"];
         int blockIndex;
@@ -76,7 +76,7 @@ void serialEvent()
                 ;
             }
         } while (block[index] != '\0');
-        
+
         for (int i = blockIndex * blockSize; i < (blockIndex * blockSize) + blockSize && !omit; i++)
         {
             leds[i].setRGB(blockColor[0], blockColor[1], blockColor[2]);
