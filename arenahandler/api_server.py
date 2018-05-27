@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from aiohttp import web
 import asyncio
 import json
@@ -6,9 +7,13 @@ import time
 import argparse
 
 import experiment.experimentctrl as ec
+import experiment.utils.logger as my_logger
+
+logger = my_logger.get_logger('apiserver')
 
 
 async def runExperiment(request):
+    logger.info("Experiment received")
     data = await request.json()
     asyncio.ensure_future(ec.runExperiment(data))
     response_obj = {'status': 'received'}
@@ -16,6 +21,7 @@ async def runExperiment(request):
 
 
 async def runState(request):
+    logger.info("State received")
     data = await request.json()
     asyncio.ensure_future(ec.runState(data))
     response_obj = {'status': 'received'}

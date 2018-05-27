@@ -1,6 +1,5 @@
 import json
 import copy
-import logging
 import sched
 import time
 import asyncio
@@ -15,10 +14,12 @@ from .component.BlockInstruction import BlockInstruction
 from .component.Color import Color
 from .component.Experiment import Experiment
 from .utils.readconfig import config
+import experiment.utils.logger as my_logger
 
-scheduler = sched.scheduler(time.time, time.sleep)
 SERIALPORT = config["serialport"]
 BAUDRATE = config["baudrate"]
+logger = my_logger.get_logger('experimentctrl')
+scheduler = sched.scheduler(time.time, time.sleep)
 
 
 async def runState(state):
@@ -69,7 +70,7 @@ def generateArdInsForArena(arena):
     -------
 
     """
-    logging.info(
+    logger.info(
         "Arena: %d, %d, %d, %s"
         % (arena.edges, arena.blocks, arena.leds, arena.color)
     )
@@ -82,7 +83,7 @@ def generateArdInsForArena(arena):
             str(i) + "," \
             + str(arena.leds) + "," \
             + Color[arena.color.upper()].value
-        print(aIns.send_instrunction(str(bIns.toJSON())))
+        logger.info(aIns.send_instrunction(str(bIns.toJSON())))
     # Edges in arena Individually
     if hasattr(arena, 'edge'):
         rangeOrSingleEdge(arena.edge, arena, aIns, True)
@@ -119,7 +120,7 @@ def generateArdInsForEdge(edge, arena, aIns):
     edgeIndex = \
         fromNegToPosEq(arena.edges, edgeIndex) \
         if (edgeIndex < 0) else edgeIndex
-    logging.info("Edge: %s, %d" % (edge.color, edgeIndex))
+    logger.info("Edge: %s, %d" % (edge.color, edgeIndex))
     for i in range(-1, (arena.blocks - 1)):
         bIns = BlockInstruction()
         bIns.brightness = arena.brightness
@@ -182,7 +183,7 @@ def generateArdInsForBlock(block, arena, aIns):
         fromNegToPosEq(arena.blocks * arena.edges, blockIndex)\
         if (blockIndex < 0) else blockIndex
     #
-    logging.info("Block: %s, %d" % (block.color, blockIndex))
+    logger.info("Block: %s, %d" % (block.color, blockIndex))
     bIns = BlockInstruction()
     bIns.brightness = arena.brightness
     bIns.block = \
@@ -227,7 +228,7 @@ def generateArdInsForBlock(block, arena, aIns):
                     ledsOutOfRange.append(
                         {'index': [orIndex], 'color': led.color}
                     )
-    logging.info(bIns.toJSON())
+    logger.info(bIns.toJSON())
     aIns.send_instrunction(str(bIns.toJSON()))
     rangeOrSingleLed(ledsOutOfRange, arena, aIns, False)
 
@@ -258,15 +259,15 @@ def generateArdInsForLed(led, arena, aIns):
     # In which edge is the led
     for edgeIndex in range(1, arena.edges + 1):
         lastLedInEdge = arena.blocks * arena.leds * edgeIndex
-        logging.info(
+        logger.info(
             "last led in edge %d, edge index %d" % (lastLedInEdge, edgeIndex)
         )
         if ledIndex <= lastLedInEdge:
-            logging.info("led in Edge: %d" % (edgeIndex))
+            logger.info("led in Edge: %d" % (edgeIndex))
             # In which block is the led
             for blockIndex in range(-1, (arena.blocks - 1)):
                 blockAbsPos = arena.blocks * edgeIndex + blockIndex
-                logging.info("Block index: %d" % (blockAbsPos))
+                logger.info("Block index: %d" % (blockAbsPos))
                 if ledIndex <= (blockAbsPos * arena.leds):
                     # In which block position is the led
                     ledBlockRelPos = ledIndex % arena.leds
@@ -275,7 +276,7 @@ def generateArdInsForLed(led, arena, aIns):
                         break
                     break
             break
-    logging.info("LED: %s, %d" % (led.color, ledIndex))
+    logger.info("LED: %s, %d" % (led.color, ledIndex))
     bIns = BlockInstruction()
     bIns.brightness = arena.brightness
     bIns.block = \
@@ -285,7 +286,7 @@ def generateArdInsForLed(led, arena, aIns):
     bIns.led.append(
         str(ledBlockRelPos - 1) + "," + Color[led.color.upper()].value
     )
-    logging.info(bIns.toJSON())
+    logger.info(bIns.toJSON())
     aIns.send_instrunction(str(bIns.toJSON()))
 
 
