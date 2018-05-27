@@ -5,8 +5,10 @@ import json
 config_example = \
 """
 {
-    "serialport":"COM5",
-    "baudrate":"57600"
+    "serialport":"/dev/ttyS5",
+    "baudrate": 57600,
+    "loglevel":"INFO",
+    "logformat":"%(asctime)s %(name)s [%(levelname)s] %(message)s"
 }
 """
 

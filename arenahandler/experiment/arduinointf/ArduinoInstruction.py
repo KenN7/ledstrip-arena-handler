@@ -6,6 +6,9 @@ from the time module to enhace it.
 """
 import serial
 from time import sleep
+import experiment.utils.logger as my_logger
+
+logger = my_logger.get_logger('arudinocomm')
 
 
 class ArduinoInstruction:
@@ -43,13 +46,15 @@ class ArduinoInstruction:
                 self.port, self.baud, timeout=self.TIMEOUT
             )
             sleep(self.START_WAIT_TIME)  # This is important
-            print("Connection started: %s, rate: %s" % (self.port, self.baud))
+            logger.info(
+                "Connection started: %s, rate: %d" % (self.port, self.baud)
+            )
         except Exception as e:
-            print(e)
+            logger.error(e)
 
     def send_instrunction(self, instruction):
         """ This sends the instruction to the Arduino. """
-
+        logger.debug(instruction)
         self.arduino.write(instruction.encode())
         sleep(self.MESSAGE_WAIT_TIME)
         response = ''
@@ -74,5 +79,5 @@ if __name__ == "__main__":
             "led": []
         }
         """)
-        print("From Arduino: %s" % (res))
+        logger.info("From Arduino: %s" % (res))
     inst.close_connection()
