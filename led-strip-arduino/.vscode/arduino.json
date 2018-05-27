@@ -1,5 +1,0 @@
-{
-    "sketch": "FastLEDexample.ino",
-    "board": "arduino:avr:uno",
-    "port": "COM4"
-}

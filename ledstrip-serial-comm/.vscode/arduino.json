@@ -1,7 +1,0 @@
-{
-    "sketch": "serialCommEx.ino",
-    "board": "arduino:avr:uno",
-    "port": "COM4",
-    "output": "../build",
-    "debugger": "jlink"
-}
