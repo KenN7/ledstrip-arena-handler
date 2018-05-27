@@ -1,5 +1,0 @@
-{
-    "sketch": "BlinkLed.ino",
-    "board": "arduino:avr:uno",
-    "port": "COM4"
-}
