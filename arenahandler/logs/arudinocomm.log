@@ -560,3 +560,5 @@
 2018-05-28 00:28:46,728 arudinocomm [INFO] Connection started: /dev/ttyS5, rate: 57600
 2018-05-28 00:28:49,182 arudinocomm [INFO] Connection started: /dev/ttyS5, rate: 57600
 2018-05-28 00:28:51,635 arudinocomm [INFO] Connection started: /dev/ttyS5, rate: 57600
+2018-06-04 20:52:47,703 arudinocomm [ERROR] [Errno 13] could not open port /dev/ttyS5: [Errno 13] Permission denied: '/dev/ttyS5'
+2018-06-04 20:53:25,115 arudinocomm [ERROR] [Errno 13] could not open port /dev/ttyS5: [Errno 13] Permission denied: '/dev/ttyS5'

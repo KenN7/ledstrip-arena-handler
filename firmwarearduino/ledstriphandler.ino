@@ -1,3 +1,27 @@
+/*
+	LED strip firmware
+
+	This file contains the code to handle a LED strip APA102 using the FastLED 
+    library and ArduinoJson. The Arduino essencialy receives a JSON string in
+    which the instruction is encoded, via its serial port. Each instruction 
+    received represents a block that consits in a fixed amount of LEDs. Using an
+    Arduino MEGA is possible to manage up to 960 LED strip where Each LED uses 
+    8 bits of memory.
+
+	The circuit:
+    The LED strip APA102 is connected to the Arduino in the follwoing inputs:
+	* Data Input => 51
+	* Clock Input => 53
+    * Ground => GND
+    
+    The LED strip is connected to an external power supply.
+
+	Created Frebuary 2018
+	By Keneth Efrén Ubeda Arriaza
+
+	https://github.com/keua/ledstrip-arena-handler
+
+*/
 #include <FastLED.h>
 #include <ArduinoJson.h>
 #define NUM_LEDS 960
@@ -8,6 +32,10 @@
 
 CRGB leds[NUM_LEDS];
 
+/*
+    Setting up the baud rate for the serial communication, the input pins,
+    brightness and the array of LEDs to handle.
+*/
 void setup()
 {
     Serial.begin(SRATE);
@@ -17,6 +45,12 @@ void setup()
 
 void loop() {}
 
+/*
+    This is method receives the serial string which is parsed firstly as a 
+    JSON to subsequently be interpreted and executed using the FastLED library.
+    Each time the method execute the instruction, a messaege to the serial port
+    is printed as an aknowledge of the request the same if any error ocurrs.
+*/
 void serialEvent()
 {
     while (Serial.available() > 0)
@@ -123,7 +157,9 @@ void serialEvent()
                     ledColor[2] = tmp.toInt();
                 }
             } while (cLed[index] != '\0');
-
+            // This line is in charge to convert the led index from a block 
+            // relative postion to an absolute position since each instruction
+            // represents a block.
             leds[(blockIndex * blockSize) + lIndex].setRGB(ledColor[0], ledColor[1], ledColor[2]);
         }
         LEDS.setBrightness(brightness);

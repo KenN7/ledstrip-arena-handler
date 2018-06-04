@@ -1,3 +1,11 @@
+"""
+This is the fundamental module which parses and interprets the states and expe-
+riments that are comming from the http requests. This module utilises an sched-
+uler in order schedule the different states within an experiment. If there are
+task scheduled but an simple state execution is received then all the scheduled
+task are canceled. The module contains the implementation for the differente 
+level of control offered by the language definiton. 
+"""
 import json
 import copy
 import sched
@@ -23,6 +31,14 @@ scheduler = sched.scheduler(time.time, time.sleep)
 
 
 async def runState(state):
+    """ 
+        runState service controller.
+        ----------
+        state : Dict
+            Dictionary containing the state configuration.
+        Returns
+        -------
+    """
     jsonArena = json.dumps(state['arena'])
     arena = Arena(jsonArena)
     if not scheduler.empty():
@@ -31,6 +47,14 @@ async def runState(state):
 
 
 async def runExperiment(experiment):
+    """ 
+        runExperiment service controller.
+        ----------
+        experiment : Dict
+            Dictionary containing the experiment configuration.
+        Returns
+        -------
+    """
     delay = 0
     jsonExperiment = json.dumps(experiment['experiment'])
     exp = Experiment(jsonExperiment)
