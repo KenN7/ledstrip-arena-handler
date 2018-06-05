@@ -1,6 +1,10 @@
+"""
+This module is used to read the configuration file in order to set the serial
+port in which the Arduino is going to be connected, the baud rate for the comm-
+unication and the log level and log format.
+"""
 import os
 import json
-#from arenahandler import version as app_ver
 
 config_example = \
 """

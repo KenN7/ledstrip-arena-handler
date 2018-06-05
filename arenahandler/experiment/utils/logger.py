@@ -1,3 +1,6 @@
+"""
+This module is used to manage the logging for the applicaiton.
+"""
 import logging
 import os
 
