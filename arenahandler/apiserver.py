@@ -32,7 +32,7 @@ async def runExperiment(request):
         data = await request.json()
         asyncio.ensure_future(ec.runExperiment(data))
         response_obj = {'status': 'received'}
-        web.Response(text=json.dumps(response_obj))
+        return web.Response(text=json.dumps(response_obj))
     except ValueError as e:
         logger.error(e)
         response_obj = {'error': str(e)}

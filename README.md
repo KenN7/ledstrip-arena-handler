@@ -62,13 +62,13 @@ Python libraries intallation
 aiohttp
 
 ```bash
-pip install aiohttp
+sudo python3.5 -m pip install aiohttp
 ```
 
 pyserial
 
 ```bash
-pip install pyserial
+sudo python3.5 -m pip install pyserial
 ```
 
 ## Deployment
