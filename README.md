@@ -412,7 +412,7 @@ overlaped the instructions at the end will override the first ones.
 
 The url to execute the change of state is the following:
 
-| Name         | Execute State                                          |
+| Name         | Execute Experiment                                     |
 |--------------|--------------------------------------------------------|
 | URL          | http://localhost:8080/arena-handler/api/v1.0/experiment|
 | Method       | POST                                                   |
