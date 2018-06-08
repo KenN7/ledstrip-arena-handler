@@ -15,7 +15,7 @@ class ArduinoInstruction:
     """ 
     This class abstracts the communication between the application and
     the Arduino. The communication is done via the serial port where
-    the Arduino is connected, also the baud rate has to be setted.
+    the Arduino is connected, also the baud rate has to be set.
     By default there is a timeout, to finish the communication if there
     is any problem and wait time that allows to wait until the 
     connection is ready.
@@ -26,12 +26,12 @@ class ArduinoInstruction:
 
     def __init__(self, port, baud):
         """ 
-        This is where the port and baud rate are setted.
+        This is where the port and baud rate are set.
         ----------
         port : string
             The serial port where the Arduino is connected.
         baud : int
-            The baud rate used to transmi information.
+            The baud rate used to transmit information.
         Returns
         -------
         new ArduinoInstruction Object
