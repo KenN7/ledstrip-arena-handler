@@ -6,7 +6,7 @@
     which the instruction is encoded, via its serial port. Each instruction 
     received represents a block that consits in a fixed amount of LEDs. Using an
     Arduino MEGA is possible to manage up to 960 LED strip where Each LED uses 
-    8 bits of memory.
+    3 bytes of memory.
 
 	The circuit:
     The LED strip APA102 is connected to the Arduino in the follwoing inputs:

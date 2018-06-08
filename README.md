@@ -90,7 +90,7 @@ the Arduino so it is necessary to change it before deploying the web server.
 The base command is:
 
 ```bash
-api_server.py [--port] [--host]
+apiserver.py [--port] [--host]
 ```
 `host` means the host where you want to bind the web server  
 `port` means the port where you want to bind the web server  
@@ -99,11 +99,11 @@ Go to the `arenahandler` directory and execute the following command:
 
 ### Linux
 ```bash
-./api_server.py --port=8080 --host=localhost
+./apiserver.py --port=8080 --host=localhost
 ```
 ### Windows
 ```bash
-python api_server.py --port=8080 --host=localhost
+python apiserver.py --port=8080 --host=localhost
 ```
 `note`: By default the host and port are `0.0.0.0`, `8080` respectively, however
  it is possible to change it using
