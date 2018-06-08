@@ -144,9 +144,8 @@ LEDs into black which is equivalent to turn off the LEDs.
 
 The url to execute the change of state is the following:
 
-|              |                                                    |
-|--------------|----------------------------------------------------|
 | Name         | Execute State                                      |
+|--------------|----------------------------------------------------|
 | URL          | http://localhost:8080/arena-handler/api/v1.0/state |
 | Method       | POST                                               |
 | Content type | application/json                                   |
@@ -413,9 +412,8 @@ overlaped the instructions at the end will override the first ones.
 
 The url to execute the change of state is the following:
 
-|              |                                                        |
-|--------------|----------------------------------------------------    |
 | Name         | Execute State                                          |
+|--------------|--------------------------------------------------------|
 | URL          | http://localhost:8080/arena-handler/api/v1.0/experiment|
 | Method       | POST                                                   |
 | Content type | application/json                                       |
