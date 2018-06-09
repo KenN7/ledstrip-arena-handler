@@ -148,8 +148,10 @@ def generateArdInsForEdge(edge, arena, aIns):
     for i in range(-1, (arena.blocks - 1)):
         bIns = BlockInstruction()
         bIns.brightness = arena.brightness
+        ardIdx = str((edgeIndex * arena.blocks + i) - 1) \
+            if arena.blocks > 1 else str(edgeIndex * arena.blocks + i)
         bIns.block = \
-            str((edgeIndex * arena.blocks + i) - 1) + "," \
+            ardIdx + "," \
             + str(arena.leds) + "," \
             + Color[edge.color.upper()].value
         aIns.send_instrunction(str(bIns.toJSON()))
@@ -274,6 +276,7 @@ def generateArdInsForLed(led, arena, aIns):
     -------
 
     """
+    ledBlockRelPos = None
     ledIndex = led.index[0]
     if ledIndex < 0:
         ledIndex = fromNegToPosEq(
@@ -303,12 +306,15 @@ def generateArdInsForLed(led, arena, aIns):
     logger.info("LED: %s, %d" % (led.color, ledIndex))
     bIns = BlockInstruction()
     bIns.brightness = arena.brightness
+    ardIdx = str((ledIndex - 1) %
+                 arena.leds) if ledBlockRelPos is None else str(ledBlockRelPos - 1)
+    ardBlIdx = str(blockAbsPos - 1) if arena.blocks > 1 else str(blockAbsPos)
     bIns.block = \
-        str(blockAbsPos - 1) + "," \
+        ardBlIdx + "," \
         + str(arena.leds) + "," \
         + Color['OMIT'].value
     bIns.led.append(
-        str(ledBlockRelPos - 1) + "," + Color[led.color.upper()].value
+        ardIdx + "," + Color[led.color.upper()].value
     )
     logger.info(bIns.toJSON())
     aIns.send_instrunction(str(bIns.toJSON()))
