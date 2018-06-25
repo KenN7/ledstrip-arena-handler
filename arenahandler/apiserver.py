@@ -2,7 +2,7 @@
 """ 
 This module uses the aiohttp library in order to create a web server which will
 expose the service to run experiments and states. The asyncio  is also used to 
-achivied asynchronous services and the negociation between the client and the 
+achieved asynchronous services and the negotiation between the client and the 
 server is done via JSON messages.
 """
 from aiohttp import web
