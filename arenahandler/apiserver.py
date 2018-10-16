@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 """ 
 This module uses the aiohttp library in order to create a web server which will
 expose the service to run experiments and states. The asyncio  is also used to 
